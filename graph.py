@@ -1,24 +1,27 @@
-import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-
-fig, ax = plt.subplots()
-
-x = np.arange(0, 2*np.pi, 0.01)
-line, = ax.plot(x, np.sin(x))
-
-
-def init():  # only required for blitting to give a clean slate.
-    line.set_ydata([np.nan] * len(x))
-    return line,
-
-
-def animate(i):
-    line.set_ydata(np.sin(x + i / 100))  # update the data.
-    return line,
-
-
-ani = animation.FuncAnimation(
-    fig, animate, init_func=init, interval=2, blit=True, save_count=50)
-
+import time
+import random
+ 
+ysample = random.sample(range(-50, 50), 100)
+ 
+xdata = []
+ydata = []
+ 
+plt.show()
+ 
+axes = plt.gca()
+axes.set_xlim(0, 100)
+axes.set_ylim(-50, +50)
+line, = axes.plot(xdata, ydata, 'r-')
+ 
+for i in range(100):
+    xdata.append(i)
+    ydata.append(ysample[i])
+    line.set_xdata(xdata)
+    line.set_ydata(ydata)
+    plt.draw()
+    plt.pause(1e-17)
+    time.sleep(0.1)
+ 
+# add this if you don't want the window to disappear at the end
 plt.show()
