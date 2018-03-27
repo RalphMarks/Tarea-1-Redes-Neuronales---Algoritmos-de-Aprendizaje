@@ -3,6 +3,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
+import math
 import random
 
 from io import StringIO
@@ -21,9 +22,9 @@ def  createplot(xdata, ydata):
   axes.set_ylim(-3, +3)
   line, = axes.plot(xdata, ydata, 'r-')
   plt.grid(True)
-  fig.suptitle('Perceptron')
+  fig.suptitle('Adaline')
   firstClass = mpatches.Patch(color='red', label='Clase 1')
-  secondClass = mpatches.Patch(color='blue', label='Clase 0')
+  secondClass = mpatches.Patch(color='blue', label='Clase 2')
   plt.legend(handles=[firstClass, secondClass])
 
   return line, plt
@@ -50,10 +51,10 @@ def drawDecisionBoundary(line, plt, w):
   plt.draw()
   plt.pause(0.001)
 
-def isClassified(errors):
+def isClassified(errors,minError):
   result = True
   for error in errors:
-    if error != 0:
+    if abs(error) > minError:
       result = False
   return result
 
@@ -70,6 +71,8 @@ def hardlim(x):
   else:
     return 0
 
+def sigmoid(x):
+  return 1 / (1 + math.exp(-x))
 
 # EXECUTION
 xdata = []
@@ -88,7 +91,7 @@ inputs = getInputVector(dataFile)
 graphDataPoints(inputs, plt)
 
 #init data
-w = np.array([[random.random(), random.random(), random.random()]])
+w = np.array([[np.round(random.random(), 2), np.round(random.random(), 2), np.round(random.random(), 2)]])
 learningRate = 0.01
 errors = []
 
@@ -99,15 +102,18 @@ for z in range(eras):
   for row in inputs:
     p = np.append(np.array([row[:2]]), [1]).T #creating column vector
     t = row[2] # target
-    #print(p)
-    a = hardlim(np.dot(w,p))
-    e = t - a # error
-    w = w + (learningRate*e*p).T
+    a = sigmoid(np.dot(w, p))
+    #print(a)
+    e = 20*(t - a)
+    print(e)
+    w = w + (2*learningRate*e*p).T
+    w = w.round(10)
+    #print(w)
     errorHelper.append(e)
     errors.append(e)
     drawDecisionBoundary(line, plt, w)
     
-  if isClassified(errorHelper):
+  if isClassified(errorHelper, minError):
     print("ya clasifico")
     break
 
